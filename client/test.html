@@ -3,9 +3,14 @@
 </head>
 
 <body>
-  {{> d3}}
+  {{#each list}}
+    {{> d3}}
+  {{/each}}
 </body>
 
 <template name='d3'>
-  <div id='container'></div>
+  <div class='mgb padded' style='background-color: #efefef;'>
+    <h3 class='mgb'>{{title}}</h3>
+    <div class='container'></div>
+  </div>
 </template>

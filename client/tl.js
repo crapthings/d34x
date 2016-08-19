@@ -8,17 +8,16 @@ tl.init = init
 
 function init (container, options) {
 
-  var lanes = options.lanes || []
-
   var options = options || {}
 
-  console.log(lanes.length)
+  var lanes = options.lanes || []
 
-  var __laneMargin = 50
+  var __laneMargin = options.__laneMargin || 50
   var __laneStrokeWidth = 10
 
-  // var defaultContainerHeight = ((10 + 50) * (lanes.length + 1)) - 10
-  var defaultContainerHeight = ((__laneStrokeWidth + __laneMargin) * (lanes.length + 1)) - __laneStrokeWidth
+  var defaultContainerHeight = ((__laneStrokeWidth + __laneMargin) * (lanes.length + 1)) - __laneStrokeWidth * 2
+
+  console.log(defaultContainerHeight)
 
   var marginSize = options.marginSize || 32
 
@@ -73,12 +72,11 @@ function init (container, options) {
 
   var gX = group
     .append('g')
-    .attr('class', 'axis x')
     .call(xAxis)
 
   //
 
-  group.makelane = function (lane, index) {
+  group.__makelane = function (lane, index) {
 
     var lane = this
       .append('g')
@@ -94,16 +92,31 @@ function init (container, options) {
       .style('transform', `translate(0, ${__laneMargin * (index + 1)}px)`)
       .style('cursor', 'pointer')
 
+    lane.on('click', function () {
+      d3
+        .select(this)
+        .append('circle')
+        .attr('class', 'circle')
+        .attr('cx', function(d) {
+          return xScale(xScale.invert(d3.mouse(this)[0]))
+        })
+        .attr('cy', function (d, e, f) {
+          console.dir(this)
+          return __laneMargin * (index + 1)
+        })
+        .attr('r', 16)
+        .attr('fill', '#9b59b6')
+    })
+
     return lane
 
   }
 
-  lanes.forEach((lane, index) => group.makelane(lane, index))
+  svg._lanes = lanes.map((lane, index) => group.__makelane(lane, index))
 
   //
 
   var test = group
-
 
   //
 
@@ -125,7 +138,7 @@ function init (container, options) {
     gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)))
   }
 
-  return container
+  return svg
 
 }
 
