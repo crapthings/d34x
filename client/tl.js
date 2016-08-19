@@ -8,9 +8,14 @@ tl.init = init
 
 function init (container, options) {
 
+  var lanes = options.lanes || []
+
   var options = options || {}
 
-  var defaultContainerHeight = 480
+  console.log(lanes.length)
+
+  // var defaultContainerHeight = ((10 + 50) * (lanes.length + 1)) - 10
+  var defaultContainerHeight = ((10 + 50) * (lanes.length + 1)) - 10
 
   var marginSize = options.marginSize || 32
 
@@ -35,7 +40,7 @@ function init (container, options) {
     .scale(xScale)
     .tickSizeInner(-(containerHeight - marginSize * 2))
     .tickSizeOuter(0)
-    // .tickPadding(20)
+    .tickPadding(0)
 
   // svg
 
@@ -70,24 +75,27 @@ function init (container, options) {
 
   //
 
-  group.makelane = function () {
+  group.makelane = function (lane, index) {
+
     var lane = this
       .append('g')
+      .datum(lane)
 
     lane
       .append('line')
       .attr('x1', 0)
       .attr('x2', containerWidth - marginSize * 2)
-      .style('stroke', '#9b59b6')
-      .style('stroke-width', 8)
-      .style('opacity', .4)
-      .style('transform', `translate(0, ${50}px)`)
+      .style('stroke', d => d.color)
+      .style('stroke-width', d => d.width || 10)
+      .style('opacity', d => d.opacity || .4)
+      .style('transform', `translate(0, ${50 * (index + 1)}px)`)
       .style('cursor', 'pointer')
 
     return lane
+
   }
 
-  group.makelane()
+  lanes.forEach((lane, index) => group.makelane(lane, index))
 
   //
 
