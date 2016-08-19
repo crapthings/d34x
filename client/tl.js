@@ -8,6 +8,8 @@ tl.init = init
 
 function init (container, options) {
 
+  var id = container.dataset.id
+
   var options = options || {}
 
   var lanes = options.lanes || []
@@ -16,8 +18,6 @@ function init (container, options) {
   var __laneStrokeWidth = 10
 
   var defaultContainerHeight = ((__laneStrokeWidth + __laneMargin) * (lanes.length + 1)) - __laneStrokeWidth * 2
-
-  console.log(defaultContainerHeight)
 
   var marginSize = options.marginSize || 32
 
@@ -105,7 +105,7 @@ function init (container, options) {
           return __laneMargin * (index + 1)
         })
         .attr('r', 16)
-        .attr('fill', '#9b59b6')
+        .attr('fill', d => d.color || '#9b59b6')
     })
 
     return lane
