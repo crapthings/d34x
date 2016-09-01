@@ -76,11 +76,15 @@ function init (container, options) {
 
   //
 
+  $dataset = []
+
   group.__makelane = function (lane, index) {
 
     var lane = this
       .append('g')
       .datum(lane)
+
+    var __return = {}
 
     lane
       .append('line')
@@ -93,22 +97,30 @@ function init (container, options) {
       .style('cursor', 'pointer')
 
     lane.on('click', function () {
-      d3
-        .select(this)
+
+      $dataset.push({
+        x: xScale.invert(d3.mouse(this)[0]),
+        y: __laneMargin * (index + 1)
+      })
+
+      __return.circles = lane
+        .selectAll('circle')
+        .data($dataset)
+        .enter()
         .append('circle')
         .attr('class', 'circle')
         .attr('cx', function(d) {
-          return xScale(xScale.invert(d3.mouse(this)[0]))
+          return xScale(d.x)
         })
-        .attr('cy', function (d, e, f) {
-          console.dir(this)
-          return __laneMargin * (index + 1)
+        .attr('cy', function (d) {
+          return d.y
         })
         .attr('r', 16)
         .attr('fill', d => d.color || '#9b59b6')
+
     })
 
-    return lane
+    return __return
 
   }
 
@@ -136,6 +148,20 @@ function init (container, options) {
 
   function handleZoom () {
     gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)))
+    // $circles.forEach(circle => {
+    //   circle
+    //     .attr('cx', (d) => {
+    //       let date = new Date(circle.attr('data-at'))
+    //       console.log(xScale(xScale(date)))
+    //       // console.log(xScale.invert(new Date(circle.attr('data-at'))))
+    //       // return date
+    //       // return xScale(circle.attr('data-at'))
+    //       return xScale(date)
+    //     })
+    // })
+    svg._lanes.forEach(lane => {
+      lane.circles && lane.circles.attr('cx', d => xScale(d.x))
+    })
   }
 
   return svg
