@@ -69,7 +69,7 @@ function init (container, options) {
     .style('fill', 'seashell')
 
   svg.on('click', function () {
-    console.dir(d3.mouse(this)[0])
+    console.dir(d3.zoomTransform(this.node()))
   })
 
   // x axis vis
@@ -145,11 +145,13 @@ function init (container, options) {
   function zoomable () {
     return d3
     .zoom()
-    // .scaleExtent([1, 100])
+    // .x(xScale)
+    .scaleExtent([1, 100])
     .on('zoom', handleZoom)
   }
 
   function handleZoom () {
+    d3.event.transform
     gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)))
     svg.selectAll('.circle').attr('cx', d => d3.event.transform.applyX(xScale(d.x)))
   }
