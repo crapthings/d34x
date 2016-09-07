@@ -68,23 +68,25 @@ function init (container, options) {
     .attr('height', containerHeight - marginSize * 2)
     .style('fill', 'seashell')
 
+  svg.on('click', function () {
+    console.dir(d3.mouse(this)[0])
+  })
+
   // x axis vis
 
   var gX = group
     .append('g')
     .call(xAxis)
 
-  //
-
-  $dataset = []
-
   group.__makelane = function (lane, index) {
+
+    let $dataset = []
 
     var lane = this
       .append('g')
       .datum(lane)
 
-    var __return = {}
+    // var __return = {}
 
     lane
       .append('line')
@@ -103,10 +105,15 @@ function init (container, options) {
         y: __laneMargin * (index + 1)
       })
 
-      __return.circles = lane
+      console.log(JSON.stringify($dataset, null, 2))
+
+      // __return.circles = lane
+      lane
         .selectAll('circle')
         .data($dataset)
         .enter()
+        // .merge(data)
+        // .enter()
         .append('circle')
         .attr('class', 'circle')
         .attr('cx', function(d) {
@@ -120,15 +127,11 @@ function init (container, options) {
 
     })
 
-    return __return
+    // return __return
 
   }
 
   svg._lanes = lanes.map((lane, index) => group.__makelane(lane, index))
-
-  //
-
-  var test = group
 
   //
 
@@ -142,26 +145,13 @@ function init (container, options) {
   function zoomable () {
     return d3
     .zoom()
-    .scaleExtent([1, 100])
+    // .scaleExtent([1, 100])
     .on('zoom', handleZoom)
   }
 
   function handleZoom () {
     gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)))
-    // $circles.forEach(circle => {
-    //   circle
-    //     .attr('cx', (d) => {
-    //       let date = new Date(circle.attr('data-at'))
-    //       console.log(xScale(xScale(date)))
-    //       // console.log(xScale.invert(new Date(circle.attr('data-at'))))
-    //       // return date
-    //       // return xScale(circle.attr('data-at'))
-    //       return xScale(date)
-    //     })
-    // })
-    svg._lanes.forEach(lane => {
-      lane.circles && lane.circles.attr('cx', d => xScale(d.x))
-    })
+    svg.selectAll('.circle').attr('cx', d => d3.event.transform.applyX(xScale(d.x)))
   }
 
   return svg
