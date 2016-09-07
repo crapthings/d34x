@@ -76,9 +76,7 @@ function init (container, options) {
 
   //
 
-
-
-  group.__makelane = function (lane, index) {
+  group.drawLane = function (lane, index) {
 
     var $dataset = []
 
@@ -127,7 +125,7 @@ function init (container, options) {
 
   }
 
-  svg._lanes = lanes.map((lane, index) => group.__makelane(lane, index))
+  svg._lanes = lanes.map((lane, index) => group.drawLane(lane, index))
 
   //
 
